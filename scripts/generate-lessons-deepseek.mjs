@@ -22,12 +22,49 @@ import path from 'node:path';
 const OUTLINE_PATH = path.resolve('scripts/outline.json');
 const OUT_DIR = path.resolve('src/content/lessons');
 
-const API_KEY = process.env.DEEPSEEK_API_KEY;
+async function readKeyFallback() {
+  // 允许用户在本机放一个不提交的密钥文件，避免在聊天里发送 Key。
+  // 优先级：环境变量 > scripts/.deepseek_key > .env.local
+  const keyFromEnv = process.env.DEEPSEEK_API_KEY;
+  if (keyFromEnv) return keyFromEnv;
+
+  const tryFiles = [
+    path.resolve('scripts/.deepseek_key'),
+    path.resolve('.env.local'),
+  ];
+
+  for (const p of tryFiles) {
+    try {
+      const raw = (await fs.readFile(p, 'utf8')).trim();
+      if (!raw) continue;
+
+      // scripts/.deepseek_key 允许直接放 key
+      if (path.basename(p) === '.deepseek_key') return raw;
+
+      // .env.local 支持 DEEPSEEK_API_KEY=...
+      const lines = raw.split(/\r?\n/);
+      for (const line of lines) {
+        const m = line.match(/^\s*DEEPSEEK_API_KEY\s*=\s*(.+)\s*$/);
+        if (m) {
+          return m[1].replace(/^['\"]|['\"]$/g, '').trim();
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+  return '';
+}
+
+const API_KEY = await readKeyFallback();
 const BASE_URL = (process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com').replace(/\/$/, '');
 const MODEL = process.env.DEEPSEEK_MODEL ?? 'deepseek-chat';
 
 if (!API_KEY) {
-  console.error('缺少环境变量 DEEPSEEK_API_KEY。请先在本机设置后再运行。');
+  console.error('缺少 DeepSeek API Key。请用以下任意一种方式提供：\n' +
+    '  1) 环境变量 DEEPSEEK_API_KEY（推荐）\n' +
+    '  2) 在 scripts/.deepseek_key 文件中放一行 key（不会提交）\n' +
+    '  3) 在 .env.local 中写 DEEPSEEK_API_KEY=...（不会提交）');
   process.exit(1);
 }
 
@@ -76,7 +113,7 @@ async function main() {
     const filename = `${pad2(order)}-${safeSlug(title).slice(0, 48) || 'lesson'}.md`;
     const outPath = path.join(OUT_DIR, filename);
 
-    const prompt = `你是一名小学科学老师，正在为“六年级下册 科教版”制作每课预习资料（纯静态网页）。\n\n请输出一篇 Markdown（不要代码块包裹），结构必须包含以下小标题（## 级别）：\n\n## 预习目标（3-5条，动词开头）\n## 关键词小卡片（5-8个词，每个用一句话解释）\n## 预习问题（3-6题，含1-2题生活化问题）\n## 安全小实验/观察（家庭可做，材料简单，有安全提示）\n## 趣味拓展（至少2条，课外知识/科学史/生活应用）\n## 练一练（3题，含选择/简答混合）\n\n要求：语言有趣但不幼稚；避免编造具体教材页码；不出现需要危险化学品/明火的操作；内容尽量和“测定/科学实验的公平/数据/误差”等科学方法相关联。\n\n本课信息：\n- 单元：${unit || '（未提供）'}\n- 课题：${title}\n- 提示：${item.summaryHint ?? '无'}\n\n另外请在文末加一段“打印版提示”（一句话）。`;
+    const prompt = `你是一名小学科学老师，为“六年级下册（教科版）”制作【孩子自己能读懂】的每课预习卡（用于纯静态网页）。\n\n请输出一篇 Markdown（不要代码块包裹），结构必须包含以下小标题（## 级别）：\n\n## 预习目标（3条，动词开头，短句）\n## 关键词小卡片（4-5个词，每个≤12字解释）\n## 预习问题（3题：2题理解 + 1题生活化）\n## 安全小实验/观察（1个，材料家里常见，步骤≤4步，含安全提示）\n## 趣味拓展（2条，每条≤25字，偏生活应用/科学史冷知识）\n## 练一练（3题：1道选择 + 2道简答；难度中等；不写答案）\n\n【长度要求】除标题外，正文总字数尽量控制在约 300–420 字，句子短、节奏快、读起来像“闯关卡”。\n\n【安全与真实】不编造教材页码与权威引用；不包含危险化学品/明火/密闭容器产气等操作；强调在家可安全完成。\n\n本课信息：\n- 单元：${unit || '（未提供）'}\n- 课题：${title}\n- 提示：${item.summaryHint ?? '无'}\n\n最后加一行：打印版提示（1句话）。`;
 
     console.log(`\n[${pad2(order)}] 生成：${title}`);
 
