@@ -1,0 +1,66 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const lessons = await getCollection('lessons');
+  return lessons.map((entry) => ({ params: { slug: entry.slug }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+
+const title = `${entry.data.title} · 六年级下科学预习`;
+---
+
+<Base title={title} description={entry.data.summary}>
+  <article class="hero">
+    <div class="no-print" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:space-between; align-items:flex-start">
+      <div>
+        <div class="unitTag" style="margin-bottom:10px"><i aria-hidden="true"></i>{entry.data.unit ?? '课程'}</div>
+        <h1 style="margin-bottom:6px">{entry.data.title}</h1>
+        <p class="sub" style="margin:0">{entry.data.minutes ? `建议 ${entry.data.minutes} 分钟` : ''}</p>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <a class="btn" href="/lessons">← 返回目录</a>
+        <button class="btn" onclick="window.print()">🖨️ 打印这一课</button>
+      </div>
+    </div>
+
+    <hr style="border:0;border-top:1px solid var(--border);margin:14px 0" />
+
+    <div style="display:grid; grid-template-columns: 1fr; gap: 14px;">
+      <div class="item" style="background: rgba(17,26,51,.35)">
+        <Content />
+      </div>
+
+      <div class="item no-print">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px">
+          <b>快速自测（点一下看答案）</b>
+          <small>目标：带着 2–3 个问题进课堂</small>
+        </div>
+        <details style="margin-top:10px">
+          <summary style="cursor:pointer">我能用一句话说清这课在学什么吗？</summary>
+          <div class="itemDesc">试着用“我们要测定 ___，并用 ___ 方法，让结果更 ___。”来造句。</div>
+        </details>
+        <details style="margin-top:10px">
+          <summary style="cursor:pointer">我能说出 3 个关键词并解释吗？</summary>
+          <div class="itemDesc">如果解释不出来，就回到“关键词小卡片”那一段。</div>
+        </details>
+      </div>
+
+      {headings?.length ? (
+        <div class="item no-print">
+          <b>本页目录</b>
+          <div style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap">
+            {headings
+              .filter((h) => h.depth <= 2)
+              .map((h) => (
+                <a class="k" href={`#${h.slug}`}>{h.text}</a>
+              ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  </article>
+</Base>

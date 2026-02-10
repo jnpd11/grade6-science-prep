@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const lessons = (await getCollection('lessons'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 6);
+---
+
+<Base title="六年级下 · 科教版 · 科学预习资料">
+  <section class="hero">
+    <h1>把“预习”变成一场小探险</h1>
+    <p class="sub">
+      每课 10–20 分钟：<b>预习目标</b> + <b>关键词</b> + <b>预习问题</b> + <b>安全小实验</b> + <b>趣味拓展</b> + <b>练一练</b>。
+      做到“带着问题进课堂”。
+    </p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px" class="no-print">
+      <a class="btn" href="/lessons">📚 打开目录</a>
+      <a class="btn" href="/about">✨ 使用说明</a>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>你会得到什么？</h2>
+        <p>
+          不只是课本知识：每课都有“<b>为什么会这样</b>”的解释、生活中的例子、以及可以安全尝试的观察。
+          目标是让孩子带着问题进课堂。
+        </p>
+      </div>
+      <div class="card">
+        <h2>怎么用最有效？</h2>
+        <p>
+          建议：先看“预习目标”，再做“预习问题”。
+          能说出 2–3 个问题的答案，就算预习成功。
+        </p>
+      </div>
+    </div>
+
+    <div style="margin-top:16px">
+      <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px">
+        <h2 style="margin:0;font-size:16px">最近更新 / 示例课程</h2>
+        <a class="btn no-print" href="/lessons">查看全部 →</a>
+      </div>
+
+      <div class="list">
+        {lessons.map((l) => (
+          <a class="item" href={`/lessons/${l.slug}`}
+            >
+            <div class="itemTitle">
+              <b>{l.data.title}</b>
+              <span>建议 {l.data.minutes ?? 15} 分钟</span>
+            </div>
+            <div class="itemDesc">{l.data.summary}</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>

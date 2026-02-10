@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { unitIcon } from '../../lib/units';
+
+const lessons = (await getCollection('lessons')).sort((a, b) => a.data.order - b.data.order);
+
+const byUnit = lessons.reduce<Record<string, typeof lessons>>((acc, l) => {
+  const u = l.data.unit ?? '其他';
+  (acc[u] ??= []).push(l);
+  return acc;
+}, {});
+
+const unitOrder = ['小小工程师', '生物的多样性', '宇宙', '物质的变化', '其他'];
+---
+
+<Base title="目录 · 六年级下科学预习（科教版）">
+  <section class="hero">
+    <h1>课程目录</h1>
+    <p class="sub">点进每一课：预习卡 + 趣味拓展 + 练一练 + 可打印样式。</p>
+
+    {unitOrder.filter((u) => byUnit[u]?.length).map((u) => (
+      <div style="margin-top:16px">
+        <div class="unitTag"><i aria-hidden="true"></i>{unitIcon(u)} {u}</div>
+        <div class="list" style="margin-top:10px">
+          {byUnit[u].map((l) => (
+            <a class="item" href={`/lessons/${l.slug}`}>
+              <div class="itemTitle">
+                <b>{String(l.data.order).padStart(2, '0')}. {l.data.title}</b>
+                <span>建议 {l.data.minutes ?? 15} 分钟</span>
+              </div>
+              {l.data.summary ? <div class="itemDesc">{l.data.summary}</div> : null}
+              {l.data.keywords?.length ? (
+                <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap">
+                  {l.data.keywords.slice(0, 6).map((k) => (
+                    <span class="k">{k}</span>
+                  ))}
+                </div>
+              ) : null}
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+  </section>
+</Base>

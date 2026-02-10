@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="说明 · 六年级下科学预习（科教版）">
+  <section class="hero">
+    <h1>使用说明</h1>
+    <p class="sub">这个站点是纯静态的：打开就能看，不需要登录，不会收集个人信息。</p>
+
+    <div class="grid" style="margin-top:14px">
+      <div class="card">
+        <h2>给孩子的用法（建议 10–20 分钟）</h2>
+        <p>
+          1）先看“预习目标”<br />
+          2）读“关键词小卡片”<br />
+          3）做“预习问题”（不会也没关系，带着疑问去上课）<br />
+          4）选一个“安全小实验/观察”尝试
+        </p>
+      </div>
+      <div class="card">
+        <h2>给家长/老师的用法</h2>
+        <p>
+          你可以把每课打印出来当“预习单”。
+          如果你提供课本目录（或单元/课题清单），我可以把整册补齐并统一排版。
+        </p>
+      </div>
+    </div>
+
+    <div class="item" style="margin-top:14px">
+      <b>关于 DeepSeek</b>
+      <p class="itemDesc">
+        如果你希望批量生成“每课预习卡 + 趣味拓展”，推荐在本地用 API 生成 markdown，然后再部署静态站。
+        这样 Key 不会泄露到前端。
+      </p>
+      <p class="itemDesc">
+        你把 DeepSeek 的 API Key 设置成环境变量（例如 <span class="k">DEEPSEEK_API_KEY</span>），再运行项目脚本即可。
+        需要我给你接好脚本的话，我下一步就补上。
+      </p>
+    </div>
+  </section>
+</Base>
