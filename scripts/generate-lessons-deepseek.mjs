@@ -113,7 +113,7 @@ async function main() {
     const filename = `${pad2(order)}-${safeSlug(title).slice(0, 48) || 'lesson'}.md`;
     const outPath = path.join(OUT_DIR, filename);
 
-    const prompt = `你是一名小学科学老师，为“六年级下册（教科版）”制作【孩子自己能读懂】的每课预习卡（用于纯静态网页）。\n\n请输出一篇 Markdown（不要代码块包裹），结构必须包含以下小标题（## 级别）：\n\n## 预习目标（3条，动词开头，短句）\n## 关键词小卡片（4-5个词，每个≤12字解释）\n## 预习问题（3题：2题理解 + 1题生活化）\n## 安全小实验/观察（1个，材料家里常见，步骤≤4步，含安全提示）\n## 趣味拓展（2条，每条≤25字，偏生活应用/科学史冷知识）\n## 练一练（3题：1道选择 + 2道简答；难度中等；不写答案）\n\n【长度要求】除标题外，正文总字数尽量控制在约 300–420 字，句子短、节奏快、读起来像“闯关卡”。\n\n【安全与真实】不编造教材页码与权威引用；不包含危险化学品/明火/密闭容器产气等操作；强调在家可安全完成。\n\n本课信息：\n- 单元：${unit || '（未提供）'}\n- 课题：${title}\n- 提示：${item.summaryHint ?? '无'}\n\n最后加一行：打印版提示（1句话）。`;
+    const prompt = `你是一名小学科学老师，为“六年级下册（教科版）”制作【孩子自己能读懂】的每课预习卡（用于纯静态网页）。\n\n请输出一篇 Markdown（不要代码块包裹），结构必须包含以下小标题（## 级别）：\n\n## 预习目标（3条，动词开头，短句）\n## 关键词小卡片（4-5个词，每个≤12字解释）\n## 预习问题（3题：2题理解 + 1题生活化）\n## 安全小实验/观察（1个，材料家里常见，步骤≤4步，含安全提示）\n## 趣味拓展（2条，每条≤25字，偏生活应用/科学史冷知识）\n## 练一练（3题：1道选择 + 2道简答；难度中等；**在题目下方立即给出答案与简要解析**）\n\n【图片要求】在练一练后面加一行：unsplash: 描述词（英文，1-3个关键词，用来找合适的免费图片，如 "science experiment kids"）\n\n【长度要求】除标题外，正文总字数尽量控制在约 300–420 字，句子短、节奏快、读起来像“闯关卡”。\n\n【安全与真实】不编造教材页码与权威引用；不包含危险化学品/明火/密闭容器产气等操作；强调在家可安全完成。\n\n本课信息：\n- 单元：${unit || '（未提供）'}\n- 课题：${title}\n- 提示：${item.summaryHint ?? '无'}\n\n最后加一行：打印版提示（1句话）。`;
 
     console.log(`\n[${pad2(order)}] 生成：${title}`);
 
@@ -126,8 +126,16 @@ async function main() {
       temperature: 0.7,
     });
 
-    const md = json?.choices?.[0]?.message?.content;
+    let md = json?.choices?.[0]?.message?.content;
     if (!md || typeof md !== 'string') throw new Error('模型返回内容为空或格式不对');
+
+    // Extract unsplash keyword from generated content
+    let unsplashKeyword = '';
+    const unsplashMatch = md.match(/unsplash:\s*([^\n]+)/i);
+    if (unsplashMatch) {
+      unsplashKeyword = unsplashMatch[1].trim();
+      md = md.replace(/unsplash:[^\n]+\n?/i, '').trim(); // Remove the unsplash line from content
+    }
 
     const fm = [
       '---',
@@ -135,6 +143,7 @@ async function main() {
       unit ? `unit: "${unit.replace(/\"/g, '”')}"` : undefined,
       `order: ${order}`,
       item.keywords?.length ? `keywords: [${item.keywords.map((k) => `"${k.replace(/\"/g, '”')}"`).join(', ')}]` : undefined,
+      unsplashKeyword ? `image: "https://source.unsplash.com/featured/?${encodeURIComponent(unsplashKeyword)}&sig=${order}"` : undefined,
       '---',
       '',
     ].filter(Boolean).join('\n');

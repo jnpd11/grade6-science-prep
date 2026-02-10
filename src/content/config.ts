@@ -9,6 +9,7 @@ const lessons = defineCollection({
     summary: z.string().optional(),
     keywords: z.array(z.string()).default([]),
     minutes: z.number().optional(),
+    image: z.string().optional(),
   }),
 });
 

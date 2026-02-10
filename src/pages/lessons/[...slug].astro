@@ -24,6 +24,16 @@ const title = `${entry.data.title} · 六年级下科学预习`;
         <h1 style="margin-bottom:6px">{entry.data.title}</h1>
         <p class="sub" style="margin:0">{entry.data.minutes ? `建议 ${entry.data.minutes} 分钟` : ''}</p>
       </div>
+      {entry.data.image ? (
+        <div class="lesson-image no-print" style="margin-top:12px">
+          <img 
+            src={entry.data.image} 
+            alt={entry.data.title}
+            loading="lazy"
+            style="width:100%; max-height:180px; object-fit:cover; border-radius:12px; border:1px solid var(--border);"
+          />
+        </div>
+      ) : null}
       <div style="display:flex; gap:10px; flex-wrap:wrap">
         <a class="btn" href="/lessons">← 返回目录</a>
         <button class="btn" onclick="window.print()">🖨️ 打印这一课</button>
