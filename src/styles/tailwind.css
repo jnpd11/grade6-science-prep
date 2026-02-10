@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Extra: softer selection */
+::selection { background: rgba(34, 197, 94, 0.25); }
