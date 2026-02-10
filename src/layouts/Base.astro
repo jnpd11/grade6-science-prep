@@ -18,12 +18,34 @@ const desc = description ?? '六年级下册（科教版）科学预习资料：
     <title>{title}</title>
     <style>
       :root{
+        --fontScale: 1.05;
+        --radius: 18px;
+      }
+
+      /* Eye-friendly default: LIGHT */
+      :root[data-theme='light']{
+        --bg1:#f7fbff;
+        --bg2:#f2f7f2;
+        --panel: rgba(255,255,255,.78);
+        --panel2: rgba(255,255,255,.6);
+        --text:#0f172a;
+        --muted: rgba(15,23,42,.72);
+        --muted2: rgba(15,23,42,.58);
+        --brand:#2563eb;
+        --brand2:#22c55e;
+        --brand3:#06b6d4;
+        --border:rgba(15,23,42,.12);
+        --shadow: 0 18px 60px rgba(2,6,23,.10);
+      }
+
+      /* Optional: dark mode */
+      :root[data-theme='dark']{
         --bg1:#070a14;
         --bg2:#0b1224;
         --panel: rgba(255,255,255,.06);
         --panel2: rgba(255,255,255,.04);
         --text:#eef2ff;
-        --muted: rgba(238,242,255,.74);
+        --muted: rgba(238,242,255,.76);
         --muted2: rgba(238,242,255,.6);
         --brand:#7c5cff;
         --brand2:#22c55e;
@@ -31,20 +53,21 @@ const desc = description ?? '六年级下册（科教版）科学预习资料：
         --border:rgba(255,255,255,.12);
         --shadow: 0 18px 60px rgba(0,0,0,.35);
       }
+
       *{box-sizing:border-box}
       body{
         margin:0;
         font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial;
         background:
-          radial-gradient(1100px 520px at 10% -10%, rgba(124,92,255,.35), transparent 60%),
-          radial-gradient(900px 520px at 90% 0%, rgba(6,182,212,.22), transparent 55%),
-          radial-gradient(900px 520px at 60% 120%, rgba(34,197,94,.18), transparent 55%),
+          radial-gradient(1100px 520px at 10% -10%, color-mix(in srgb, var(--brand) 32%, transparent), transparent 60%),
+          radial-gradient(900px 520px at 90% 0%, color-mix(in srgb, var(--brand3) 18%, transparent), transparent 55%),
+          radial-gradient(900px 520px at 60% 120%, color-mix(in srgb, var(--brand2) 14%, transparent), transparent 55%),
           linear-gradient(180deg, var(--bg1), var(--bg2));
         color:var(--text);
       }
       a{color:inherit;text-decoration:none}
-      .container{max-width:1040px;margin:0 auto;padding:22px}
-      header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+      .container{max-width:980px;margin:0 auto;padding:20px}
+      header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}
       .logo{display:flex;align-items:center;gap:12px}
       .logoTitle{font-weight:800; letter-spacing:.2px}
       .badge{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:rgba(0,0,0,.22);color:var(--muted2);font-size:12px}
@@ -56,16 +79,16 @@ const desc = description ?? '六年级下册（科教版）科学预习资料：
       .hero{
         padding:18px;
         border:1px solid var(--border);
-        border-radius:18px;
-        background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+        border-radius: var(--radius);
+        background: linear-gradient(180deg, var(--panel), var(--panel2));
         box-shadow: var(--shadow);
         backdrop-filter: blur(10px);
       }
-      h1{margin:0 0 10px;font-size:30px;letter-spacing:.2px;line-height:1.15}
+      h1{margin:0 0 10px;font-size:calc(28px * var(--fontScale));letter-spacing:.2px;line-height:1.15}
       h2{letter-spacing:.1px}
-      .sub{margin:0;color:var(--muted);line-height:1.7}
+      .sub{margin:0;color:var(--muted);line-height:1.85;font-size:calc(15px * var(--fontScale))}
       .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-top:16px}
-      .card{grid-column: span 6; padding:14px;border:1px solid var(--border);border-radius:16px;background:rgba(0,0,0,.18)}
+      .card{grid-column: span 6; padding:14px;border:1px solid var(--border);border-radius:16px;background:color-mix(in srgb, var(--panel) 70%, transparent)}
       .card h2{margin:0 0 8px;font-size:16px}
       .card p{margin:0;color:var(--muted);line-height:1.7}
       .card small{color:rgba(238,242,255,.7)}
@@ -79,8 +102,8 @@ const desc = description ?? '六年级下册（科教版）科学预习资料：
       .btn:hover{border-color:rgba(255,255,255,.22); background: linear-gradient(135deg, rgba(124,92,255,.32), rgba(34,197,94,.12));}
 
       .list{margin-top:14px;display:grid;gap:10px}
-      .item{padding:12px 12px;border:1px solid var(--border);border-radius:16px;background:rgba(0,0,0,.14)}
-      .item:hover{background:rgba(0,0,0,.22)}
+      .item{padding:12px 12px;border:1px solid var(--border);border-radius:16px;background:color-mix(in srgb, var(--panel) 66%, transparent)}
+      .item:hover{background:color-mix(in srgb, var(--panel) 82%, transparent)}
       .itemTitle{display:flex;gap:10px;align-items:baseline;justify-content:space-between}
       .itemTitle b{font-size:15px}
       .itemTitle span{color:rgba(238,242,255,.62);font-size:12px}
@@ -92,9 +115,21 @@ const desc = description ?? '六年级下册（科教版）科学预习资料：
       .unitTag{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(0,0,0,.18);color:rgba(238,242,255,.7);font-size:12px}
       .unitTag i{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--brand2),var(--brand3));display:inline-block}
 
+      .controls{display:flex; gap:8px; align-items:center; justify-content:flex-end}
+      .ctrl{border:1px solid var(--border); background:color-mix(in srgb, var(--panel) 75%, transparent); border-radius:12px; padding:8px 10px; cursor:pointer; color:inherit}
+      .ctrl:hover{background:color-mix(in srgb, var(--panel) 92%, transparent)}
+
+      .unitHero{display:flex; gap:12px; align-items:center; justify-content:space-between; padding:12px 12px; border:1px solid var(--border); border-radius:16px; background: linear-gradient(135deg, color-mix(in srgb, var(--ua) 18%, var(--panel)), color-mix(in srgb, var(--ub) 14%, var(--panel2)));}
+      .unitHeroLeft{display:flex; flex-direction:column; gap:6px}
+      .unitHeroBadge{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:color-mix(in srgb, var(--panel) 75%, transparent)}
+      .unitHeroBadge b{font-size:13px}
+      .unitHeroText{color:var(--muted); font-size:calc(14px * var(--fontScale)); line-height:1.7}
+      .unitHeroArt{width:160px; height:auto; opacity:.95}
+
       @media (max-width: 720px){
         .card{grid-column: span 12}
-        h1{font-size:24px}
+        h1{font-size:calc(24px * var(--fontScale))}
+        .unitHeroArt{display:none}
       }
       @media print{
         body{background:#fff;color:#000}
@@ -111,14 +146,17 @@ const desc = description ?? '六年级下册（科教版）科学预习资料：
           <div class="brandDot" aria-hidden="true"></div>
           <div>
             <div class="logoTitle">六年级下 · 科学预习</div>
-            <div class="badge"><span class="brandDot" style="width:8px;height:8px"></span> 教科版 · 纯静态 · 手机友好 · 支持打印</div>
+            <div class="badge"><span class="brandDot" style="width:8px;height:8px"></span> 教科版 · 护眼阅读 · 支持打印 · 可互动</div>
           </div>
         </div>
-        <nav class="no-print">
-          <a href="/">首页</a>
-          <a href="/lessons">目录</a>
-          <a href="/about">说明</a>
-        </nav>
+        <div style="display:flex; gap:10px; align-items:center">
+          <nav class="no-print">
+            <a href="/">首页</a>
+            <a href="/lessons">目录</a>
+            <a href="/about">说明</a>
+          </nav>
+          <slot name="controls" />
+        </div>
       </header>
 
       <slot />

@@ -2,6 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { unitIcon } from '../../lib/units';
+import ThemeControls from '../../components/ThemeControls.astro';
+import UnitHero from '../../components/UnitHero.astro';
 
 const lessons = (await getCollection('lessons')).sort((a, b) => a.data.order - b.data.order);
 
@@ -14,10 +16,12 @@ const byUnit = lessons.reduce<Record<string, typeof lessons>>((acc, l) => {
 const unitOrder = ['小小工程师', '生物的多样性', '宇宙', '物质的变化', '其他'];
 ---
 
-<Base title="目录 · 六年级下科学预习（科教版）">
+<Base title="目录 · 六年级下科学预习（教科版）">
+  <Fragment slot="controls"><ThemeControls /></Fragment>
   <section class="hero">
     <h1>课程目录</h1>
-    <p class="sub">点进每一课：预习卡 + 趣味拓展 + 练一练 + 可打印样式。</p>
+    <p class="sub">点进每一课：预习卡 + 趣味拓展 + 练一练 + 可打印样式。可以切换护眼模式、调大字体。</p>
+    <div style="margin-top:12px"><UnitHero unit="六年级下科学" /></div>
 
     {unitOrder.filter((u) => byUnit[u]?.length).map((u) => (
       <div style="margin-top:16px">

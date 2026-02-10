@@ -1,6 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
+import ThemeControls from '../../components/ThemeControls.astro';
+import UnitHero from '../../components/UnitHero.astro';
 
 export async function getStaticPaths() {
   const lessons = await getCollection('lessons');
@@ -14,6 +16,7 @@ const title = `${entry.data.title} · 六年级下科学预习`;
 ---
 
 <Base title={title} description={entry.data.summary}>
+  <Fragment slot="controls"><ThemeControls /></Fragment>
   <article class="hero">
     <div class="no-print" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:space-between; align-items:flex-start">
       <div>
@@ -26,6 +29,8 @@ const title = `${entry.data.title} · 六年级下科学预习`;
         <button class="btn" onclick="window.print()">🖨️ 打印这一课</button>
       </div>
     </div>
+
+    <div style="margin-top:12px" class="no-print"><UnitHero unit={entry.data.unit ?? '课程'} /></div>
 
     <hr style="border:0;border-top:1px solid var(--border);margin:14px 0" />
 

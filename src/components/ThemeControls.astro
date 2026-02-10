@@ -1,0 +1,55 @@
+---
+// Small client-side controls: theme + font size + progress.
+---
+
+<div class="controls no-print" aria-label="阅读设置">
+  <button class="ctrl" id="themeToggle" type="button" title="切换护眼模式">🌙/☀️</button>
+  <button class="ctrl" id="fontMinus" type="button" title="字小一点">A-</button>
+  <button class="ctrl" id="fontPlus" type="button" title="字大一点">A+</button>
+</div>
+
+<script>
+  const root = document.documentElement;
+
+  function setTheme(next) {
+    root.dataset.theme = next;
+    localStorage.setItem('theme', next);
+  }
+
+  function initTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) return setTheme(saved);
+    // default: light (eye-friendly)
+    setTheme('light');
+  }
+
+  function setFontScale(scale) {
+    const s = Math.max(0.9, Math.min(1.25, scale));
+    root.style.setProperty('--fontScale', String(s));
+    localStorage.setItem('fontScale', String(s));
+  }
+
+  function initFontScale() {
+    const saved = Number(localStorage.getItem('fontScale'));
+    if (!Number.isNaN(saved) && saved) setFontScale(saved);
+    else setFontScale(1.05);
+  }
+
+  initTheme();
+  initFontScale();
+
+  document.getElementById('themeToggle')?.addEventListener('click', () => {
+    const cur = root.dataset.theme || 'light';
+    setTheme(cur === 'light' ? 'dark' : 'light');
+  });
+
+  document.getElementById('fontMinus')?.addEventListener('click', () => {
+    const cur = Number(getComputedStyle(root).getPropertyValue('--fontScale')) || 1;
+    setFontScale(cur - 0.05);
+  });
+
+  document.getElementById('fontPlus')?.addEventListener('click', () => {
+    const cur = Number(getComputedStyle(root).getPropertyValue('--fontScale')) || 1;
+    setFontScale(cur + 0.05);
+  });
+</script>

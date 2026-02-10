@@ -1,0 +1,41 @@
+---
+import { unitIcon } from '../lib/units';
+
+const { unit } = Astro.props as { unit?: string };
+const u = unit ?? '六年级下科学';
+const icon = unitIcon(u);
+
+const palette: Record<string, { a: string; b: string }> = {
+  '小小工程师': { a: '#f97316', b: '#fb7185' },
+  '生物的多样性': { a: '#22c55e', b: '#06b6d4' },
+  '宇宙': { a: '#7c5cff', b: '#06b6d4' },
+  '物质的变化': { a: '#f59e0b', b: '#22c55e' },
+};
+
+const c = palette[u] ?? { a: '#7c5cff', b: '#06b6d4' };
+---
+
+<div class="unitHero" style={`--ua:${c.a}; --ub:${c.b};`}>
+  <div class="unitHeroLeft">
+    <div class="unitHeroBadge"><span>{icon}</span><b>{u}</b></div>
+    <div class="unitHeroText">一课一张“闯关卡”：短、清楚、有趣，还能打印。</div>
+  </div>
+  <svg class="unitHeroArt" viewBox="0 0 260 120" role="img" aria-label="装饰插画">
+    <defs>
+      <linearGradient id="g" x1="0" x2="1">
+        <stop offset="0" stop-color="var(--ua)" stop-opacity=".9" />
+        <stop offset="1" stop-color="var(--ub)" stop-opacity=".9" />
+      </linearGradient>
+      <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000" flood-opacity=".18" />
+      </filter>
+    </defs>
+    <g filter="url(#s)">
+      <circle cx="210" cy="40" r="28" fill="url(#g)" opacity=".9"/>
+      <circle cx="160" cy="70" r="18" fill="url(#g)" opacity=".7"/>
+      <rect x="24" y="58" width="92" height="38" rx="14" fill="url(#g)" opacity=".9"/>
+      <rect x="44" y="28" width="120" height="20" rx="10" fill="url(#g)" opacity=".55"/>
+      <path d="M30 102 C70 72, 110 120, 150 90 C180 68, 210 116, 246 92" fill="none" stroke="url(#g)" stroke-width="6" stroke-linecap="round" opacity=".6"/>
+    </g>
+  </svg>
+</div>

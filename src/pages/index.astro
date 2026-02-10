@@ -1,13 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import ThemeControls from '../components/ThemeControls.astro';
 
 const lessons = (await getCollection('lessons'))
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 6);
 ---
 
-<Base title="六年级下 · 科教版 · 科学预习资料">
+<Base title="六年级下 · 教科版 · 科学预习资料">
+  <Fragment slot="controls"><ThemeControls /></Fragment>
   <section class="hero">
     <h1>把“预习”变成一场小探险</h1>
     <p class="sub">

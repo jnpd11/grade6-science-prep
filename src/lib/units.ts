@@ -1,5 +1,5 @@
 export const UNIT_ICONS: Record<string, string> = {
-  '小小工程师': '🧱',
+  '小小工程师': '🏗️',
   '生物的多样性': '🌿',
   '宇宙': '🪐',
   '物质的变化': '🧪',
