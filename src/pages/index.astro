@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import ThemeControls from '../components/ThemeControls.astro';
+import StatsStrip from '../components/StatsStrip.astro';
 
 const lessons = (await getCollection('lessons'))
   .sort((a, b) => a.data.order - b.data.order)
@@ -10,18 +11,18 @@ const lessons = (await getCollection('lessons'))
 
 <Base title="六年级下 · 教科版 · 科学预习资料">
   <Fragment slot="controls"><ThemeControls /></Fragment>
-  <section class="hero">
+  <section class="hero" id="top" data-parallax="true">
     <h1>把“预习”变成一场小探险</h1>
     <p class="sub">
       每课 10–20 分钟：<b>预习目标</b> + <b>关键词</b> + <b>预习问题</b> + <b>安全小实验</b> + <b>趣味拓展</b> + <b>练一练</b>。
       做到“带着问题进课堂”。
     </p>
-    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px" class="no-print">
-      <a class="btn" href="/lessons">📚 打开目录</a>
-      <a class="btn" href="/about">✨ 使用说明</a>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px" class="no-print reveal">
+      <a class="btn ripple" href="/lessons"><i class="fa-solid fa-list-check"></i> 打开目录</a>
+      <a class="btn ripple" href="/about"><i class="fa-regular fa-circle-question"></i> 使用说明</a>
     </div>
 
-    <div class="grid">
+    <div class="grid reveal">
       <div class="card">
         <h2>你会得到什么？</h2>
         <p>
@@ -38,13 +39,19 @@ const lessons = (await getCollection('lessons'))
       </div>
     </div>
 
-    <div style="margin-top:16px">
-      <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px">
+    <StatsStrip />
+
+    <div style="margin-top:14px" class="skeleton" id="skeleton">
+      <div style="height:18px"></div>
+    </div>
+
+    <div style="margin-top:16px" id="mainContent" hidden>
+      <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px" class="reveal">
         <h2 style="margin:0;font-size:16px">最近更新 / 示例课程</h2>
         <a class="btn no-print" href="/lessons">查看全部 →</a>
       </div>
 
-      <div class="list">
+      <div class="list reveal">
         {lessons.map((l) => (
           <a class="item" href={`/lessons/${l.slug}`}
             >
@@ -57,5 +64,75 @@ const lessons = (await getCollection('lessons'))
         ))}
       </div>
     </div>
+      </div>
+    </div>
   </section>
+
+  <script>
+    // Skeleton -> reveal
+    const sk = document.getElementById('skeleton');
+    const main = document.getElementById('mainContent');
+    requestAnimationFrame(() => {
+      if (sk) sk.remove();
+      if (main) main.hidden = false;
+    });
+
+    // Ripple coords
+    document.querySelectorAll('.ripple').forEach((el) => {
+      el.addEventListener('pointerdown', (e) => {
+        const r = el.getBoundingClientRect();
+        el.style.setProperty('--rx', ((e.clientX - r.left) / r.width) * 100 + '%');
+        el.style.setProperty('--ry', ((e.clientY - r.top) / r.height) * 100 + '%');
+      });
+    });
+
+    // Scroll reveal
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const ent of entries) {
+          if (ent.isIntersecting) {
+            ent.target.classList.add('is-in');
+            io.unobserve(ent.target);
+          }
+        }
+      },
+      { threshold: 0.18 }
+    );
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+    // Parallax hero
+    const hero = document.querySelector('[data-parallax=true]');
+    function onScroll() {
+      if (!hero) return;
+      const y = window.scrollY || 0;
+      hero.style.backgroundPosition = `center ${y * 0.25}px`;
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Count up
+    function countUp(el) {
+      const target = Number(el.dataset.count || '0');
+      const start = performance.now();
+      const dur = 900;
+      function tick(t) {
+        const p = Math.min(1, (t - start) / dur);
+        const v = Math.round(target * (0.15 + 0.85 * p));
+        el.textContent = String(v);
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = String(target);
+      }
+      requestAnimationFrame(tick);
+    }
+    const countEls = document.querySelectorAll('.count');
+    const io2 = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          countUp(e.target);
+          io2.unobserve(e.target);
+        }
+      }
+    }, { threshold: 0.4 });
+    countEls.forEach((el) => io2.observe(el));
+  </script>
 </Base>

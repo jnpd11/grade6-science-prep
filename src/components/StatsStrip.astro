@@ -1,0 +1,26 @@
+---
+const stats = [
+  { label: '课程', value: 28, icon: 'fa-solid fa-book-open' },
+  { label: '单元', value: 4, icon: 'fa-solid fa-layer-group' },
+  { label: '每课建议', value: 15, suffix: '分钟', icon: 'fa-regular fa-clock' },
+];
+---
+
+<div class="grid reveal" style="margin-top:14px">
+  {stats.map((s) => (
+    <div class="card" style="position:relative; overflow:hidden">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px">
+        <div>
+          <div style="color:var(--muted2); font-size:12px">{s.label}</div>
+          <div style="font-weight:900; font-size:28px; line-height:1.1; margin-top:6px">
+            <span class="count" data-count={String(s.value)}>0</span>{s.suffix ?? ''}
+          </div>
+        </div>
+        <div class="k" aria-hidden="true"><i class={s.icon}></i></div>
+      </div>
+      <div style="margin-top:8px; color:var(--muted); line-height:1.7; font-size:13px">
+        进度会自动保存：孩子每天完成一小步。
+      </div>
+    </div>
+  ))}
+</div>
